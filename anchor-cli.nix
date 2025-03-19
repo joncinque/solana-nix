@@ -1,16 +1,5 @@
-{ stdenv
-, darwin
-, fetchFromGitHub
-, lib
-, libgcc
-, pkg-config
-, protobuf
-, makeRustPlatform
-, makeWrapper
-, solana-platform-tools
-, rust-bin
-, udev
-}:
+{ stdenv, darwin, fetchFromGitHub, lib, libgcc, pkg-config, protobuf
+, makeRustPlatform, makeWrapper, solana-platform-tools, rust-bin, udev }:
 let
   # nixpkgs 24.11 defaults to Rust v1.82.0
   # Anchor does not declare a rust-toolchain, so we do it here -- the code
@@ -19,20 +8,16 @@ let
     cargo = rust-bin.stable."1.85.0".default;
     rustc = rust-bin.stable."1.85.0".default;
   };
-in
-rustPlatform.buildRustPackage rec {
+in rustPlatform.buildRustPackage rec {
   pname = "anchor-cli";
   version = "0.31.0";
 
   doCheck = false;
 
   nativeBuildInputs = [ protobuf pkg-config makeWrapper ];
-  buildInputs = [ ]
-    ++ lib.optionals stdenv.isLinux [ udev ]
-    ++ lib.optional
-    stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.CoreFoundation
-  ];
+  buildInputs = [ ] ++ lib.optionals stdenv.isLinux [ udev ]
+    ++ lib.optional stdenv.isDarwin
+    [ darwin.apple_sdk.frameworks.CoreFoundation ];
 
   src = fetchFromGitHub {
     owner = "coral-xyz";
@@ -46,9 +31,7 @@ rustPlatform.buildRustPackage rec {
     allowBuiltinFetchGit = true;
   };
 
-  patches = [
-    ./anchor-cli.patch
-  ];
+  patches = [ ./anchor-cli.patch ];
 
   buildAndTestSubdir = "cli";
 
@@ -59,7 +42,5 @@ rustPlatform.buildRustPackage rec {
       --prefix PATH : "$rust"
   '';
 
-  meta = {
-    description = "Anchor cli";
-  };
+  meta = { description = "Anchor cli"; };
 }
