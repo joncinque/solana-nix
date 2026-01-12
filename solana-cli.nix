@@ -31,7 +31,6 @@
     "solana-faucet"
     "solana-gossip"
     "solana-keygen"
-    "solana-log-analyzer"
     "solana-net-shaper"
     "solana-dos"
     "solana-stake-accounts"

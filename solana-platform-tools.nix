@@ -13,7 +13,7 @@
   xz,
   zlib,
   system ? builtins.currentSystem,
-  version ? "1.48",
+  version ? "1.51",
 }:
 let
   systemMapping = {
@@ -25,6 +25,13 @@ let
   };
 
   versionMapping = {
+    "1.51" = {
+      x86_64-linux = "sha256-j5zNdhloBCHxzRJLTIzeqR2VsEd5hZKs4Jii9FaPSbk=";
+      aarch64-linux = "";
+      x86_64-darwin = "";
+      aarch64-darwin = "";
+      x86_64-windows = "";
+    };
     "1.48" = {
       x86_64-linux = "sha256-vHeOPs7B7WptUJ/mVvyt7ue+MqfqAsbwAHM+xlN/tgQ=";
       aarch64-linux = "sha256-i3I9pwa+DyMJINFr+IucwytzEHdiRZU6r7xWHzppuR4=";
@@ -99,7 +106,7 @@ stdenv.mkDerivation rec {
 
   # A bit ugly, but liblldb.so uses libedit.so.2 and nix provides libedit.so
   postFixup = lib.optionals stdenv.isLinux ''
-    patchelf --replace-needed libedit.so.2 libedit.so $out/bin/platform-tools-sdk/sbf/dependencies/platform-tools/llvm/lib/liblldb.so.19.1.7-rust-dev
+    patchelf --replace-needed libedit.so.2 libedit.so $out/bin/platform-tools-sdk/sbf/dependencies/platform-tools/llvm/lib/liblldb.so.*
   '';
 
   # We need to preserve metadata in .rlib, which might get stripped on macOS. See https://github.com/NixOS/nixpkgs/issues/218712
