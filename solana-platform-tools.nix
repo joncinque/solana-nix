@@ -47,16 +47,10 @@
       chmod 0755 -R $out
       touch $platformtools-${version}.md
 
-      # Criterion is also needed
-      criterion=$out/bin/platform-tools-sdk/sbf/dependencies/criterion
-      mkdir $criterion
-      ln -s ${criterion.dev}/include $criterion/include
-      ln -s ${criterion}/lib $criterion/lib
-      ln -s ${criterion}/share $criterion/share
-      touch $criterion-v${criterion.version}.md
-
-      cp -ar ${solana-source.src}/platform-tools-sdk/sbf/* $out/bin/platform-tools-sdk/sbf/
+      rm $platformtools/llvm/lib/python3.13/site-packages/lldb/lldb-argdumper
     '';
+
+    noBrokenSymlinksHook = false;
 
     # A bit ugly, but liblldb.so uses libedit.so.2 and nix provides libedit.so
     postFixup = lib.optionals stdenv.isLinux ''

@@ -1,16 +1,16 @@
-{ stdenv, darwin, fetchFromGitHub, lib, libgcc, pkg-config, protobuf
+{ stdenv, darwin, fetchFromGitHub, lib, pkg-config, protobuf
 , makeRustPlatform, makeWrapper, solana-platform-tools, rust-bin, udev }:
 let
   # nixpkgs 24.11 defaults to Rust v1.82.0
   # Anchor does not declare a rust-toolchain, so we do it here -- the code
   # mentions Rust 1.85.0 at https://github.com/coral-xyz/anchor/blob/c509618412e004415c7b090e469a9e4d5177f642/docs/content/docs/installation.mdx?plain=1#L31
   rustPlatform = makeRustPlatform {
-    cargo = rust-bin.stable."1.85.0".default;
-    rustc = rust-bin.stable."1.85.0".default;
+    cargo = rust-bin.stable."1.86.0".default;
+    rustc = rust-bin.stable."1.86.0".default;
   };
 in rustPlatform.buildRustPackage rec {
   pname = "anchor-cli";
-  version = "0.31.0";
+  version = "0.31.1";
 
   doCheck = false;
 
@@ -23,7 +23,7 @@ in rustPlatform.buildRustPackage rec {
     owner = "coral-xyz";
     repo = "anchor";
     rev = "v${version}";
-    hash = "sha256-CaBVdp7RPVmzzEiVazjpDLJxEkIgy1BHCwdH2mYLbGM=";
+    hash = "sha256-c+UybdZCFL40TNvxn0PHR1ch7VPhhJFDSIScetRpS3o=";
   };
 
   cargoLock = {

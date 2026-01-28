@@ -43,11 +43,8 @@
     src = solana-source.src;
 
     cargoLock = {
-      lockFile = "${src.outPath}/Cargo.lock";
-      outputHashes = {
-        "crossbeam-epoch-0.9.5" =
-          "sha256-Jf0RarsgJiXiZ+ddy0vp4jQ59J9m0k3sgXhWhCdhgws=";
-      };
+      lockFile = "${src}/Cargo.lock";
+      allowBuiltinFetchGit = true;
     };
 
     strictDeps = true;

@@ -6,7 +6,7 @@
     flake-parts.url =
       "github:hercules-ci/flake-parts/f4330d22f1c5d2ba72d3d22df5597d123fdb60a9";
     rust-overlay.url =
-      "github:oxalica/rust-overlay/87f0965f9f5b13fca9f38074eee8369dc767550d";
+      "github:oxalica/rust-overlay/e2142ef330a61c02f274ac9a9cb6f8487a5d0080";
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, rust-overlay }:
     flake-parts.lib.mkFlake { inherit inputs; } {
