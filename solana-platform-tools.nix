@@ -13,7 +13,7 @@
   xz,
   zlib,
   system ? builtins.currentSystem,
-  version ? "1.45",
+  version ? "1.48",
 }:
 let
   systemMapping = {

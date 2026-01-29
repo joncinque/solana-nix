@@ -1,5 +1,5 @@
 # https://github.com/NixOS/nixpkgs/blob/nixos-23.11/pkgs/applications/blockchains/solana/default.nix
-{ stdenv, lib, darwin, udev, protobuf, libcxx, rocksdb_8_11, pkg-config
+{ stdenv, lib, darwin, udev, protobuf, libcxx, rocksdb, pkg-config
 , makeWrapper, solana-platform-tools, solana-source, openssl, nix-update-script
 , makeRustPlatform, rust-bin, crane,
 # Taken from https://github.com/solana-labs/solana/blob/master/scripts/cargo-install-all.sh#L84
@@ -29,8 +29,8 @@ let
   version = solana-source.version;
   src = solana-source.src;
 
-  # Use Rust 1.84.1 as required by Agave 2.1.x
-  rust = rust-bin.stable."1.84.1".default;
+  # Use Rust 1.86.0 as required by Agave 2.3.x
+  rust = rust-bin.stable."1.86.0".default;
   rustPlatform = makeRustPlatform {
     cargo = rust;
     rustc = rust;
@@ -59,9 +59,9 @@ let
     # https://crane.dev/faq/rebuilds-bindgen.html?highlight=bindgen#i-see-the-bindgen-crate-constantly-rebuilding
     NIX_OUTPATH_USED_AS_RANDOM_SEED = "aaaaaaaaaa";
 
-    # Used by build.rs in the rocksdb_8_11-sys crate
-    ROCKSDB_LIB_DIR = "${rocksdb_8_11}/lib";
-    ROCKSDB_INCLUDE_DIR = "${rocksdb_8_11}/include";
+    # Used by build.rs in the rocksdb-sys crate
+    ROCKSDB_LIB_DIR = "${rocksdb}/lib";
+    ROCKSDB_INCLUDE_DIR = "${rocksdb}/include";
 
     # For darwin systems
     CPPFLAGS = lib.optionals stdenv.isDarwin
