@@ -1,33 +1,17 @@
-{
-  stdenv,
-  anchor-cli,
-  solana-cli,
-  solana-rust,
-  runCommand,
-  nodejs,
-  yarn,
-  cacert
+{ stdenv, anchor-cli, solana-cli, solana-rust, runCommand, nodejs, yarn, cacert
 }:
 let
-  src =
-    runCommand "anchor-test-src"
-      {
-        nativeBuildInputs = [
-          anchor-cli
-          nodejs
-          yarn
-        ];
-      }
-      ''
-        mkdir -p $out
-        cd $out
-        export HOME=$(mktemp -d)
-        RUST_LOG=trace anchor init example --javascript --no-install --no-git --package-manager yarn
-        mv example/.* example/* .
-        rm -rf example
-      '';
-in
-stdenv.mkDerivation {
+  src = runCommand "anchor-test-src" {
+    nativeBuildInputs = [ anchor-cli nodejs yarn ];
+  } ''
+    mkdir -p $out
+    cd $out
+    export HOME=$(mktemp -d)
+    RUST_LOG=trace anchor init example --javascript --no-install --no-git --package-manager yarn
+    mv example/.* example/* .
+    rm -rf example
+  '';
+in stdenv.mkDerivation {
   # Disable sandboxing
   # this is for CI live test check and we want to make sure
   # anchor init and build work when ran by a user
@@ -38,14 +22,7 @@ stdenv.mkDerivation {
 
   doCheck = false;
 
-  nativeBuildInputs = [
-    anchor-cli
-    solana-cli
-    nodejs
-    yarn
-    solana-rust
-    cacert 
-  ];
+  nativeBuildInputs = [ anchor-cli solana-cli nodejs yarn solana-rust cacert ];
 
   buildPhase = ''
     export HOME=$(mktemp -d)
@@ -60,7 +37,5 @@ stdenv.mkDerivation {
     echo ok > $out
   '';
 
-  meta = {
-    description = "Anchor build testing of a new project initialised";
-  };
+  meta = { description = "Anchor build testing of a new project initialised"; };
 }

@@ -1,10 +1,4 @@
-{
-  stdenv,
-  autoPatchelfHook,
-  lib,
-  solana-cli,
-  solana-platform-tools,
-}:
+{ stdenv, autoPatchelfHook, lib, solana-cli, solana-platform-tools, }:
 stdenv.mkDerivation {
   pname = "solana-rust";
   version = solana-cli.version;

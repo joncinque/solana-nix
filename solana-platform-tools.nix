@@ -1,20 +1,6 @@
-{
-  stdenv,
-  autoPatchelfHook,
-  criterion,
-  fetchzip,
-  lib,
-  libclang,
-  libedit,
-  openssl,
-  python310,
-  solana-source,
-  udev,
-  xz,
-  zlib,
-  system ? builtins.currentSystem,
-  version ? "1.48",
-}:
+{ stdenv, autoPatchelfHook, criterion, fetchzip, lib, libclang, libedit, openssl
+, python310, solana-source, udev, xz, zlib, system ? builtins.currentSystem
+, version ? "1.48", }:
 let
   systemMapping = {
     x86_64-linux = "linux-x86_64";
@@ -50,13 +36,13 @@ let
   # The system string is inverted, and each bundle has a different hash
   releaseSystem = systemMapping."${system}";
   releaseHash = versionMapping."${version}"."${system}";
-in
-stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
   pname = "solana-platform-tools";
   inherit version;
 
   src = fetchzip {
-    url = "https://github.com/anza-xyz/platform-tools/releases/download/v${version}/platform-tools-${releaseSystem}.tar.bz2";
+    url =
+      "https://github.com/anza-xyz/platform-tools/releases/download/v${version}/platform-tools-${releaseSystem}.tar.bz2";
     hash = releaseHash;
     stripRoot = false;
   };
@@ -94,12 +80,19 @@ stdenv.mkDerivation rec {
     ln -s ${criterion}/share $criterion/share
     touch $criterion-v${criterion.version}.md
 
-    cp -ar ${solana-source.src}/platform-tools-sdk/sbf/* $out/bin/platform-tools-sdk/sbf/
+    # Copy SDK files from source - path changed between Agave versions
+    if [ -d "${solana-source.src}/platform-tools-sdk/sbf" ]; then
+      cp -ar ${solana-source.src}/platform-tools-sdk/sbf/* $out/bin/platform-tools-sdk/sbf/
+    elif [ -d "${solana-source.src}/sdk/sbf" ]; then
+      cp -ar ${solana-source.src}/sdk/sbf/* $out/bin/platform-tools-sdk/sbf/
+    fi
   '';
 
   # A bit ugly, but liblldb.so uses libedit.so.2 and nix provides libedit.so
   postFixup = lib.optionals stdenv.isLinux ''
-    patchelf --replace-needed libedit.so.2 libedit.so $out/bin/platform-tools-sdk/sbf/dependencies/platform-tools/llvm/lib/liblldb.so.19.1.7-rust-dev
+    for f in $out/bin/platform-tools-sdk/sbf/dependencies/platform-tools/llvm/lib/liblldb.so.*-rust-dev; do
+      patchelf --replace-needed libedit.so.2 libedit.so "$f"
+    done
   '';
 
   # We need to preserve metadata in .rlib, which might get stripped on macOS. See https://github.com/NixOS/nixpkgs/issues/218712
@@ -111,7 +104,5 @@ stdenv.mkDerivation rec {
     platforms = platforms.aarch64 ++ platforms.unix;
   };
 
-  passthru = {
-    otherVersions = builtins.attrNames versionMapping;
-  };
+  passthru = { otherVersions = builtins.attrNames versionMapping; };
 }

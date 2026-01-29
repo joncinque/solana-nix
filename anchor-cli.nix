@@ -1,18 +1,6 @@
-{
-  stdenv,
-  darwin,
-  fetchFromGitHub,
-  lib,
-  pkg-config,
-  protobuf,
-  makeWrapper,
-  solana-platform-tools,
-  rust-bin,
-  udev,
-  crane,
-  writeShellScriptBin,
-  version ? "0.31.1",
-}:
+{ stdenv, darwin, fetchFromGitHub, lib, pkg-config, protobuf, makeWrapper
+, solana-platform-tools, rust-bin, udev, crane, writeShellScriptBin
+, version ? "0.31.1", }:
 let
   pname = "anchor-cli";
 
@@ -61,11 +49,7 @@ let
     src = originalSrc;
 
     # Apply the patch
-    phases = [
-      "unpackPhase"
-      "patchPhase"
-      "installPhase"
-    ];
+    phases = [ "unpackPhase" "patchPhase" "installPhase" ];
     patches = versionDeps.patches;
 
     # Install the patched source as an output
@@ -83,15 +67,8 @@ let
     strictDeps = true;
     doCheck = false;
 
-    nativeBuildInputs = [
-      protobuf
-      pkg-config
-      makeWrapper
-    ];
-    buildInputs =
-      [ ]
-      ++ lib.optionals stdenv.isLinux [ udev ]
-      ++ lib.optional stdenv.isDarwin [ darwin.apple_sdk.frameworks.CoreFoundation ];
+    nativeBuildInputs = [ protobuf pkg-config makeWrapper ];
+    buildInputs = [ ] ++ lib.optionals stdenv.isLinux [ udev ];
   };
 
   cargoArtifacts = craneLib.buildDepsOnly commonArgs;
@@ -114,31 +91,27 @@ let
       exec cargo "$@"
     fi
   '';
-in
-craneLib.buildPackage (
-  commonArgs
-  // {
-    inherit cargoArtifacts;
+in craneLib.buildPackage (commonArgs // {
+  inherit cargoArtifacts;
 
-    # Ensure anchor has access to Solana's rust binaries and our cargo shim with nightly
-    postInstall = ''
-      rust=${versionDeps.platform-tools}/bin/platform-tools-sdk/sbf/dependencies/platform-tools/rust/bin
-      wrapProgram $out/bin/anchor \
-        --prefix PATH : "${cargoShim}/bin" \
-        --set _NIX_SUPPORT_STABLE_TOOLCHAIN "$rust" \
-        --set _NIX_SUPPORT_NIGHTLY_TOOLCHAIN "${versionDeps.rust-nightly}/bin"
-    '';
+  # Ensure anchor has access to Solana's rust binaries and our cargo shim with nightly
+  postInstall = ''
+    rust=${versionDeps.platform-tools}/bin/platform-tools-sdk/sbf/dependencies/platform-tools/rust/bin
+    wrapProgram $out/bin/anchor \
+      --prefix PATH : "${cargoShim}/bin" \
+      --set _NIX_SUPPORT_STABLE_TOOLCHAIN "$rust" \
+      --set _NIX_SUPPORT_NIGHTLY_TOOLCHAIN "${versionDeps.rust-nightly}/bin"
+  '';
 
-    cargoExtraArgs = "-p ${pname}";
+  cargoExtraArgs = "-p ${pname}";
 
-    meta = {
-      mainProgram = "anchor";
-      description = "Anchor cli";
-    };
+  meta = {
+    mainProgram = "anchor";
+    description = "Anchor cli";
+  };
 
-    passthru = {
-      otherVersions = builtins.attrNames versionsDeps;
-      rustNightly = versionDeps.rust-nightly._version;
-    };
-  }
-)
+  passthru = {
+    otherVersions = builtins.attrNames versionsDeps;
+    rustNightly = versionDeps.rust-nightly._version;
+  };
+})
