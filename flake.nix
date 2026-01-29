@@ -26,8 +26,9 @@
       perSystem = { config, self', inputs', pkgs, system, ... }:
         let
           solana-source = pkgs.callPackage ./solana-source.nix { };
+          criterion = pkgs.callPackage ./criterion.nix { };
           solana-platform-tools = pkgs.callPackage ./solana-platform-tools.nix {
-            inherit solana-source;
+            inherit solana-source criterion;
           };
           solana-rust = pkgs.callPackage ./solana-rust.nix {
             inherit solana-platform-tools;
