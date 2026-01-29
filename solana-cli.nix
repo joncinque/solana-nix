@@ -1,6 +1,6 @@
 # https://github.com/NixOS/nixpkgs/blob/nixos-23.11/pkgs/applications/blockchains/solana/default.nix
-{ stdenv, lib, darwin, udev, protobuf, libcxx, rocksdb, pkg-config
-, makeWrapper, solana-platform-tools, solana-source, openssl, nix-update-script
+{ stdenv, lib, darwin, udev, protobuf, libcxx, rocksdb, pkg-config, makeWrapper
+, solana-platform-tools, solana-source, openssl, nix-update-script
 , makeRustPlatform, rust-bin, crane,
 # Taken from https://github.com/solana-labs/solana/blob/master/scripts/cargo-install-all.sh#L84
 solanaPkgs ? [
@@ -72,10 +72,11 @@ let
     OPENSSL_NO_VENDOR = 1;
   };
 
-  cargoArtifacts = craneLib.buildDepsOnly (builtins.removeAttrs commonArgs [ "src" ] // {
-    # Use dummySrc to avoid errors when parsing manifests for target-less crates (e.g. client-test)
-    dummySrc = src;
-  });
+  cargoArtifacts = craneLib.buildDepsOnly
+    (builtins.removeAttrs commonArgs [ "src" ] // {
+      # Use dummySrc to avoid errors when parsing manifests for target-less crates (e.g. client-test)
+      dummySrc = src;
+    });
 in craneLib.buildPackage (commonArgs // {
   inherit cargoArtifacts;
 

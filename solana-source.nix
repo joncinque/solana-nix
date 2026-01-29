@@ -2,8 +2,7 @@
 let
   version = "2.3.13";
   sha256 = "sha256-RSucqvbshaaby4fALhAQJtZztwsRdA+X7yRnoBxQvsg=";
-in
-{
+in {
   inherit version;
   src = fetchFromGitHub {
     owner = "anza-xyz";
