@@ -13,7 +13,7 @@
   xz,
   zlib,
   system ? builtins.currentSystem,
-  version ? "1.51",
+  version ? "1.52",
 }:
 let
   systemMapping = {
@@ -25,6 +25,13 @@ let
   };
 
   versionMapping = {
+    "1.52" = {
+      x86_64-linux = "sha256-fAEd7Bva2S6gW4+2xyp0TurkO1ygDQbGNvDOXMbNHAI=";
+      aarch64-linux = "";
+      x86_64-darwin = "";
+      aarch64-darwin = "";
+      x86_64-windows = "";
+    };
     "1.51" = {
       x86_64-linux = "sha256-j5zNdhloBCHxzRJLTIzeqR2VsEd5hZKs4Jii9FaPSbk=";
       aarch64-linux = "";
