@@ -7,13 +7,13 @@
   libclang,
   libedit,
   openssl,
-  python310,
+  python313,
   solana-source,
   udev,
   xz,
   zlib,
   system ? builtins.currentSystem,
-  version ? "1.52",
+  version ? "1.54",
 }:
 let
   systemMapping = {
@@ -25,6 +25,13 @@ let
   };
 
   versionMapping = {
+    "1.54" = {
+      x86_64-linux = "";
+      aarch64-linux = "";
+      x86_64-darwin = "";
+      aarch64-darwin = "";
+      x86_64-windows = "";
+    };
     "1.52" = {
       x86_64-linux = "sha256-fAEd7Bva2S6gW4+2xyp0TurkO1ygDQbGNvDOXMbNHAI=";
       aarch64-linux = "";
@@ -89,7 +96,7 @@ stdenv.mkDerivation rec {
     stdenv.cc.cc
     libclang.lib
     xz
-    python310
+    python313
   ] ++ lib.optionals stdenv.isLinux [ openssl udev ];
 
   installPhase = ''

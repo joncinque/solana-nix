@@ -9,7 +9,7 @@
   rocksdb,
   pkg-config,
   makeWrapper,
-  solana-platform-tools,
+  #solana-platform-tools,
   solana-source,
   openssl,
   nix-update-script,
@@ -23,8 +23,8 @@
     #"agave-ledger-tool"
     "agave-validator"
     "agave-watchtower"
-    "cargo-build-sbf"
-    "cargo-test-sbf"
+    #"cargo-build-sbf"
+    #"cargo-test-sbf"
     "rbpf-cli"
     "solana"
     #"solana-bench-tps"
@@ -42,8 +42,8 @@ let
   version = solana-source.version;
   src = solana-source.src;
 
-  # Use Rust 1.86.0 as required by Agave
-  rust = rust-bin.stable."1.86.0".default;
+  # Use Rust as required by Agave
+  rust = rust-bin.stable."1.93.1".default;
   rustPlatform = makeRustPlatform {
     cargo = rust;
     rustc = rust;
@@ -122,19 +122,6 @@ craneLib.buildPackage (
   commonArgs
   // {
     inherit cargoArtifacts;
-
-    postInstall = ''
-      mkdir -p $out/bin/platform-tools-sdk/sbf
-      cp -a ./platform-tools-sdk/sbf/* $out/bin/platform-tools-sdk/sbf/
-
-      rust=${solana-platform-tools}/bin/platform-tools-sdk/sbf/dependencies/platform-tools/rust/bin
-      sbfsdkdir=${solana-platform-tools}/bin/platform-tools-sdk/sbf
-      wrapProgram $out/bin/cargo-build-sbf \
-        --prefix PATH : "$rust" \
-        --set SBF_SDK_PATH "$sbfsdkdir" \
-        --append-flags --no-rustup-override \
-        --append-flags --skip-tools-install
-    '';
 
     meta = with lib; {
       mainProgram = "solana";
